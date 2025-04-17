@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import '../styles/LandingPage.css'; // Asegúrate de crear este archivo CSS
+import { API_URL } from '../config';
 
 const LandingPage = () => {
   const [busqueda, setBusqueda] = useState('');
@@ -16,7 +17,7 @@ const LandingPage = () => {
     setCargando(true);
 
     try {
-      const response = await fetch(`http://localhost:5000/api/expedientes/consulta?tipo=expediente&valor=${busqueda}`, {
+      const response = await fetch(`${API_URL}/expedientes/consulta?tipo=expediente&valor=${busqueda}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

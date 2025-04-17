@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import { API_URL } from '../config';
 
 interface LocationState {
   tipoEspecifico?: string;
@@ -129,7 +130,7 @@ const FormModificacion = () => {
       }
 
       // Enviar datos al backend
-      const response = await fetch('http://localhost:5000/api/tramites', {
+      const response = await fetch(`${API_URL}/tramites`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

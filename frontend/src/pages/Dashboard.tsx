@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Table, Form, Badge, Spinner, Card, Modal, Row, Col } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { FiFileText, FiCheckCircle, FiClipboard, FiUserCheck, FiLogOut, FiEye, FiDownload, FiX, FiMail, FiEdit2 } from 'react-icons/fi';
+import { API_URL } from '../config';
 
 interface Tramite {
   id: number;
@@ -71,7 +72,7 @@ const Dashboard = () => {
     // Obtener datos del usuario desde el backend
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/user', {
+        const response = await fetch(`${API_URL}/user`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -94,7 +95,7 @@ const Dashboard = () => {
     const fetchTramites = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:5000/api/tramites', {
+        const response = await fetch(`${API_URL}/tramites`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -207,7 +208,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/tramites/${id}`, {
+      const response = await fetch(`${API_URL}/tramites/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -244,7 +245,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/tramites/${id}`, {
+      const response = await fetch(`${API_URL}/tramites/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -252,9 +253,9 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ 
           estado: nuevoEstado,
-          enviarCorreo: enviarCorreo,
-          emailTemplateType: emailTemplateType,
-          mensajeIncidencia: mensajeIncidencia
+          enviarCorreo,
+          emailTemplateType,
+          mensajeIncidencia
         })
       });
 
@@ -306,33 +307,21 @@ const Dashboard = () => {
   };
 
   const handleViewPdf = (pdfName: string) => {
-    if (!pdfName) return;
-    
-    // Obtener el token de autenticación
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No está autenticado. Por favor, inicie sesión.');
-      navigate('/login');
+    if (!pdfName) {
+      setError("No hay documento disponible para visualizar");
       return;
     }
-
-    // Abrir el PDF en una nueva pestaña
-    window.open(`http://localhost:5000/api/documents/${pdfName}?token=${token}`, '_blank');
+    setShowModal(true);
+    setSelectedTramite(tramites.find(t => t.dniPdf === pdfName) || null);
   };
 
   const handleDownloadPdf = (pdfName: string) => {
-    if (!pdfName) return;
-    
-    // Obtener el token de autenticación
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No está autenticado. Por favor, inicie sesión.');
-      navigate('/login');
+    if (!pdfName) {
+      setError("No hay documento disponible para descargar");
       return;
     }
-
-    // Iniciar la descarga del PDF
-    window.location.href = `http://localhost:5000/api/documents/download/${pdfName}?token=${token}`;
+    // Abrir en una nueva pestaña para descargar
+    window.open(`${API_URL}/documents/download/${pdfName}?token=${localStorage.getItem('token')}`, '_blank');
   };
 
   const handleDeleteTramite = async (id: number) => {
@@ -343,7 +332,7 @@ const Dashboard = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:5000/api/tramites/${id}`, {
+      const response = await fetch(`${API_URL}/tramites/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

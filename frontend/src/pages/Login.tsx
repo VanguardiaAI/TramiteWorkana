@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import { API_URL } from '../config';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

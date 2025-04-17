@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { API_URL } from '../config';
 
 const FormSolicitud = () => {
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ const FormSolicitud = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/solicitudes', {
+      const response = await fetch(`${API_URL}/solicitudes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
