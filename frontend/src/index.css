@@ -1,0 +1,317 @@
+/* Archivo CSS vacío - Bootstrap se cargará en main.tsx */
+
+/* Variables de color corporativas */
+:root {
+  --primary-color: #3a86ff;
+  --primary-gradient: linear-gradient(135deg, #3a86ff 0%, #1a56cc 100%);
+  --secondary-color: #4cc9f0;
+  --secondary-gradient: linear-gradient(135deg, #4cc9f0 0%, #0096c7 100%);
+  --success-color: #2ec4b6;
+  --success-gradient: linear-gradient(135deg, #2ec4b6 0%, #14919b 100%);
+  --info-color: #4361ee;
+  --info-gradient: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+  --warning-color: #ff9e00;
+  --warning-gradient: linear-gradient(135deg, #ff9e00 0%, #e85d04 100%);
+  --danger-color: #e63946;
+  --danger-gradient: linear-gradient(135deg, #e63946 0%, #d00000 100%);
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --bg-color: #f5f7fb;
+  --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  --card-hover-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
+  --border-radius: 0.5rem;
+  --transition-speed: 0.3s;
+}
+
+/* Estilos generales */
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--dark-color);
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Mejorar Cards */
+.card {
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-speed) ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--card-hover-shadow);
+  transform: translateY(-3px);
+}
+
+.card-header {
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-footer {
+  border-top: none;
+  background: transparent;
+  padding: 1.5rem;
+}
+
+/* Botones con gradientes */
+.btn {
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all var(--transition-speed) ease;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity var(--transition-speed) ease;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-image: var(--primary-gradient);
+}
+
+.btn-success {
+  background-image: var(--success-gradient);
+}
+
+.btn-info {
+  background-image: var(--info-gradient);
+  color: white;
+}
+
+.btn-warning {
+  background-image: var(--warning-gradient);
+}
+
+.btn-danger {
+  background-image: var(--danger-gradient);
+}
+
+.btn-outline-secondary {
+  border: 1px solid #ced4da;
+  background: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: #adb5bd;
+}
+
+/* Formularios elegantes */
+.form-control, .form-select {
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  border: 1px solid #e9ecef;
+  transition: all var(--transition-speed) ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(58, 134, 255, 0.2);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Tabla estilizada */
+.table {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.table thead th {
+  background-color: var(--light-color);
+  border-bottom: none;
+  font-weight: 600;
+  padding: 1rem;
+  color: #495057;
+}
+
+.table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Badges modernos */
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+  border-radius: 50rem;
+}
+
+.bg-success {
+  background-image: var(--success-gradient) !important;
+}
+
+.bg-warning {
+  background-image: var(--warning-gradient) !important;
+  color: white !important;
+}
+
+.bg-primary {
+  background-image: var(--primary-gradient) !important;
+}
+
+.bg-info {
+  background-image: var(--info-gradient) !important;
+}
+
+/* Encabezado con gradiente para las secciones de card */
+.card-header.bg-primary {
+  background-image: var(--primary-gradient) !important;
+}
+
+.card-header.bg-success {
+  background-image: var(--success-gradient) !important;
+}
+
+.card-header.bg-info {
+  background-image: var(--info-gradient) !important;
+}
+
+/* Estilos para alertas */
+.alert {
+  border-radius: var(--border-radius);
+  border: none;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.alert-success {
+  background-color: rgba(46, 196, 182, 0.15);
+  color: var(--success-color);
+}
+
+.alert-danger {
+  background-color: rgba(230, 57, 70, 0.15);
+  color: var(--danger-color);
+}
+
+.alert-info {
+  background-color: rgba(76, 201, 240, 0.15);
+  color: var(--info-color);
+}
+
+/* Otros efectos visuales */
+.shadow-sm {
+  box-shadow: var(--card-shadow) !important;
+}
+
+/* Estilos para spinners */
+.spinner-border {
+  color: var(--primary-color);
+}
+
+/* Navbar estilizado */
+.dashboard-header {
+  background-image: var(--primary-gradient);
+  padding: 1.5rem;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+/* Diseño responsivo */
+@media (max-width: 768px) {
+  .card-header, .card-body, .card-footer {
+    padding: 1rem;
+  }
+  
+  .table thead th, .table tbody td {
+    padding: 0.75rem;
+  }
+}
+
+/* Estilos para animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-animation {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Para cargar la fuente Poppins de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Estilo para las filas con efecto hover en el Dashboard */
+.hover-effect:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilos para el selector de formulario */
+.shadow-hover {
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-selector {
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-selector:hover {
+  transform: translateX(5px);
+}

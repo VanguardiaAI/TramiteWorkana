@@ -1,0 +1,29 @@
+# Archivos y directorios a ignorar
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+dist/
+build/
+*.log
+.DS_Store
+.git/
+
+# Bases de datos
+*.db
+*.sqlite3
+
+# Archivos de carga
+tramite-app/backend/uploads/
+
+# Archivos de caché
+.cache/
+.pytest_cache/
+.coverage
+.mypy_cache/ 
