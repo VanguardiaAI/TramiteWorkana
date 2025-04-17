@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 # Configurar CORS para permitir peticiones desde el frontend
-CORS(app, resources={r"/api/*": {"origins": os.environ.get('CORS_ORIGINS', 'http://localhost:5173')}})
+CORS(app, resources={r"/api/*": {"origins": os.environ.get('CORS_ORIGINS', '*')}})
 
 # Configuración de la base de datos
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -680,7 +680,7 @@ def file_too_large(error):
     }), 413
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8000))
     host = os.environ.get('HOST', '0.0.0.0')
     debug = os.environ.get('FLASK_ENV', 'production') == 'development'
     
