@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 import os
+import logging
 from functools import wraps
 from werkzeug.utils import secure_filename
 import uuid
@@ -16,13 +17,24 @@ from dotenv import load_dotenv
 # Cargar variables de entorno desde .env si existe
 load_dotenv()
 
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] - %(message)s',
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 # Configurar CORS para permitir peticiones desde el frontend
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/api/*": {"origins": os.environ.get('CORS_ORIGINS', 'http://localhost:5173')}})
 
 # Configuración de la base de datos
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tramites.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:///' + os.path.join(basedir, 'tramites.db'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'una_clave_secreta_muy_segura')
 
@@ -630,5 +642,51 @@ def consultar_expediente():
 with app.app_context():
     db.create_all()
 
+# Manejo de errores HTTP
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        'message': 'Recurso no encontrado',
+        'error': str(error)
+    }), 404
+
+@app.errorhandler(500)
+def server_error(error):
+    logger.error(f"Error interno del servidor: {str(error)}")
+    return jsonify({
+        'message': 'Error interno del servidor',
+        'error': 'Ocurrió un error al procesar la solicitud'
+    }), 500
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        'message': 'Solicitud incorrecta',
+        'error': str(error)
+    }), 400
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        'message': 'No autorizado',
+        'error': str(error)
+    }), 401
+
+@app.errorhandler(RequestEntityTooLarge)
+def file_too_large(error):
+    return jsonify({
+        'message': 'Archivo demasiado grande',
+        'error': 'El tamaño máximo permitido es 16MB'
+    }), 413
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    debug = os.environ.get('FLASK_ENV', 'production') == 'development'
+    
+    logger.info(f"Iniciando aplicación en {host}:{port} (debug={debug})")
+    
+    try:
+        app.run(host=host, port=port, debug=debug)
+    except Exception as e:
+        logger.error(f"Error al iniciar la aplicación: {str(e)}")
