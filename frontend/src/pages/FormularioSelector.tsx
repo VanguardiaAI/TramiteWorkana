@@ -1,11 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
-interface NavigationState {
-  tipoEspecifico: string;
-  tipoFormulario: string;
-}
-
 const FormularioSelector = () => {
   const navigate = useNavigate();
   const location = useLocation();

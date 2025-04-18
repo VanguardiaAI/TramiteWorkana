@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Table, Form, Badge, Spinner, Card, Modal, Row, Col, Pagination, InputGroup, Dropdown } from 'react-bootstrap';
+import { Button, Table, Form, Badge, Spinner, Card, Modal, Row, Col, Pagination, InputGroup } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { FiFileText, FiCheckCircle, FiClipboard, FiUserCheck, FiLogOut, FiEye, FiDownload, FiX, FiMail, FiEdit2 } from 'react-icons/fi';
 import { API_URL } from '../config';
@@ -55,7 +55,6 @@ const Dashboard = () => {
   const [searchCUPS, setSearchCUPS] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [showSearchOptions, setShowSearchOptions] = useState(false);
   const [advancedSearch, setAdvancedSearch] = useState(false);
   const [filterEstado, setFilterEstado] = useState<string>('');
   const navigate = useNavigate();

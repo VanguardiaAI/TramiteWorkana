@@ -129,8 +129,12 @@ def token_required(f):
 def register():
     data = request.json
 
+    # Validar que se proporcione la clave secreta
+    if not data or not data.get('clave_secreta') or data.get('clave_secreta') != 'Workana2025':
+        return jsonify({'message': 'Clave secreta incorrecta'}), 403
+
     # Validar que se proporcionen los datos necesarios
-    if not data or not data.get('name') or not data.get('email') or not data.get('password'):
+    if not data.get('name') or not data.get('email') or not data.get('password'):
         return jsonify({'message': 'Faltan datos requeridos'}), 400
 
     # Verificar si el correo ya está registrado
