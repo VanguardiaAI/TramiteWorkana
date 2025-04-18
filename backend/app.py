@@ -380,7 +380,7 @@ def create_tramite(current_user):
 @app.route('/api/tramites', methods=['GET'])
 @token_required
 def get_tramites(current_user):
-    tramites = Tramite.query.filter_by(user_id=current_user.id).all()
+    tramites = Tramite.query.all()
     
     # Imprimir información de depuración de cada trámite
     for tramite in tramites:

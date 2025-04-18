@@ -54,6 +54,9 @@ const LandingPage = () => {
               <img src="/Logo.png" alt="Logo de la empresa" className="company-logo" />
             </div>
             <div className="d-flex align-items-center">
+              <Link to="/formulario" className="btn btn-primary me-2" state={{ from: 'landing' }}>
+                <i className="bi bi-file-earmark-plus me-2"></i>Crear Expediente
+              </Link>
               <Link to="/login" className="btn btn-outline-primary btn-login-nav">
                 <i className="bi bi-person-fill me-2"></i>Acceso Empleados
               </Link>
@@ -133,6 +136,13 @@ const LandingPage = () => {
               </a>
               <p className="download-info mt-2">
                 Descarga el formato oficial requerido para iniciar tu trámite
+              </p>
+              <a href="/AnexoII.pdf" download className="btn btn-primary btn-download-pdf mt-3">
+                <i className="bi bi-file-earmark-pdf-fill me-2"></i>
+                Plantilla de varios suministros
+              </a>
+              <p className="download-info mt-2">
+                Descarga la plantilla para trámites con varios suministros
               </p>
             </div>
           </Col>

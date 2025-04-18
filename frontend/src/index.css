@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* Archivo CSS vacío - Bootstrap se cargará en main.tsx */
 
 /* Variables de color corporativas */
@@ -283,9 +285,6 @@ body {
 .fade-in-animation {
   animation: fadeIn 0.5s ease forwards;
 }
-
-/* Para cargar la fuente Poppins de Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* Estilo para las filas con efecto hover en el Dashboard */
 .hover-effect:hover {

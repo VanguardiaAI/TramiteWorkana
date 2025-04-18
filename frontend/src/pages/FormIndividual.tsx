@@ -288,16 +288,12 @@ const FormIndividual = () => {
               <Form.Group as={Col} md="6" controlId="cups">
                 <Form.Label>CUPS</Form.Label>
                 <Form.Control
-                  required
                   type="text"
                   name="cups"
                   value={formData.cups}
                   onChange={handleInputChange}
                   placeholder="Código Universal de Punto de Suministro"
                 />
-                <Form.Control.Feedback type="invalid">
-                  Por favor ingrese el CUPS.
-                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} md="6" controlId="direccion">

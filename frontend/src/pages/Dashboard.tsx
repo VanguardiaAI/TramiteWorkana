@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Table, Form, Badge, Spinner, Card, Modal, Row, Col } from 'react-bootstrap';
+import { Button, Table, Form, Badge, Spinner, Card, Modal, Row, Col, Pagination, InputGroup, Dropdown } from 'react-bootstrap';
 import { Container } from 'react-bootstrap';
 import { FiFileText, FiCheckCircle, FiClipboard, FiUserCheck, FiLogOut, FiEye, FiDownload, FiX, FiMail, FiEdit2 } from 'react-icons/fi';
 import { API_URL } from '../config';
@@ -33,6 +33,7 @@ interface Tramite {
 const Dashboard = () => {
   const [userName, setUserName] = useState('');
   const [tramites, setTramites] = useState<Tramite[]>([]);
+  const [filteredTramites, setFilteredTramites] = useState<Tramite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -47,6 +48,16 @@ const Dashboard = () => {
   const [numeroExpedienteInput, setNumeroExpedienteInput] = useState('');
   const [emailTemplateType, setEmailTemplateType] = useState<string>('');
   const [incidenciaMessage, setIncidenciaMessage] = useState<string>('');
+  const [editingCups, setEditingCups] = useState<number | null>(null);
+  const [cupsInput, setCupsInput] = useState('');
+  const [searchExpediente, setSearchExpediente] = useState('');
+  const [searchNombre, setSearchNombre] = useState('');
+  const [searchCUPS, setSearchCUPS] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [showSearchOptions, setShowSearchOptions] = useState(false);
+  const [advancedSearch, setAdvancedSearch] = useState(false);
+  const [filterEstado, setFilterEstado] = useState<string>('');
   const navigate = useNavigate();
 
   // Efecto para registrar información del trámite seleccionado
@@ -119,6 +130,93 @@ const Dashboard = () => {
     fetchUserData();
     fetchTramites();
   }, [navigate]);
+
+  // Efecto para aplicar filtros
+  useEffect(() => {
+    let results = tramites;
+    
+    // Filtrar por número de expediente
+    if (searchExpediente) {
+      results = results.filter(tramite => 
+        tramite.numeroExpediente?.toLowerCase().includes(searchExpediente.toLowerCase())
+      );
+    }
+    
+    // Filtrar por nombre de cliente
+    if (searchNombre) {
+      results = results.filter(tramite => 
+        tramite.nombreCliente?.toLowerCase().includes(searchNombre.toLowerCase())
+      );
+    }
+    
+    // Filtrar por CUPS
+    if (searchCUPS) {
+      results = results.filter(tramite => 
+        tramite.cups?.toLowerCase().includes(searchCUPS.toLowerCase())
+      );
+    }
+    
+    // Filtrar por estado
+    if (filterEstado) {
+      results = results.filter(tramite => tramite.estado === filterEstado);
+    }
+    
+    setFilteredTramites(results);
+    setCurrentPage(1); // Regresar a la primera página después de aplicar filtros
+  }, [tramites, searchExpediente, searchNombre, searchCUPS, filterEstado]);
+
+  // Cálculo de páginas y elementos a mostrar
+  const totalPages = Math.ceil(filteredTramites.length / itemsPerPage);
+  
+  const currentTramites = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return filteredTramites.slice(indexOfFirstItem, indexOfLastItem);
+  }, [filteredTramites, currentPage, itemsPerPage]);
+
+  // Navegación por páginas
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
+  const paginationItems = [];
+  
+  // Agregar primer y último botón
+  paginationItems.push(
+    <Pagination.First key="first" onClick={() => paginate(1)} disabled={currentPage === 1} />
+  );
+  paginationItems.push(
+    <Pagination.Prev key="prev" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
+  );
+  
+  // Determinar qué páginas mostrar (máximo 5 páginas visibles)
+  let startPage = Math.max(1, currentPage - 2);
+  let endPage = Math.min(totalPages, startPage + 4);
+  
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, endPage - 4);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    paginationItems.push(
+      <Pagination.Item key={i} active={i === currentPage} onClick={() => paginate(i)}>
+        {i}
+      </Pagination.Item>
+    );
+  }
+  
+  paginationItems.push(
+    <Pagination.Next key="next" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} />
+  );
+  paginationItems.push(
+    <Pagination.Last key="last" onClick={() => paginate(totalPages)} disabled={currentPage === totalPages || totalPages === 0} />
+  );
+
+  const resetFilters = () => {
+    setSearchExpediente('');
+    setSearchNombre('');
+    setSearchCUPS('');
+    setFilterEstado('');
+    setAdvancedSearch(false);
+  };
 
   // Función para obtener el color del Badge según el estado
   const getEstadoBadgeColor = (estado: string) => {
@@ -364,6 +462,53 @@ const Dashboard = () => {
     setTramiteToDelete(null);
   };
 
+  const handleCupsEdit = (id: number, cupsActual: string) => {
+    setEditingCups(id);
+    setCupsInput(cupsActual);
+  };
+
+  const handleCupsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCupsInput(e.target.value);
+  };
+
+  const handleCupsSubmit = async (id: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      const tramiteActual = tramites.find(t => t.id === id);
+      if (!tramiteActual) {
+        setError('No se encontró el trámite a actualizar.');
+        return;
+      }
+      const response = await fetch(`${API_URL}/tramites/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          cups: cupsInput,
+          estado: tramiteActual.estado // Mantener el estado actual
+        })
+      });
+      if (response.ok) {
+        setTramites(tramites.map(tramite => 
+          tramite.id === id ? {...tramite, cups: cupsInput} : tramite
+        ));
+        setEditingCups(null);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Error al actualizar el CUPS. Por favor, inténtelo de nuevo.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar CUPS:', error);
+      setError('Error de conexión con el servidor');
+    }
+  };
+
   return (
     <div className="fade-in-animation">
       <div className="dashboard-header">
@@ -400,7 +545,36 @@ const Dashboard = () => {
 
       <Container fluid className="py-4 px-4">
         <Row className="mb-4">
-          <Col xs={12} className="d-flex justify-content-end">
+          <Col md={8} className="d-flex align-items-center">
+            <Form className="w-100 me-2">
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  placeholder="Buscar por N° Expediente..."
+                  value={searchExpediente}
+                  onChange={e => setSearchExpediente(e.target.value)}
+                  aria-label="Buscar expediente"
+                />
+                <Button 
+                  variant="outline-secondary" 
+                  onClick={() => setAdvancedSearch(!advancedSearch)}
+                  title="Búsqueda avanzada"
+                >
+                  {advancedSearch ? "Búsqueda simple" : "Búsqueda avanzada"}
+                </Button>
+                {(searchExpediente || searchNombre || searchCUPS || filterEstado) && (
+                  <Button 
+                    variant="outline-secondary" 
+                    onClick={resetFilters}
+                    title="Limpiar filtros"
+                  >
+                    <FiX size={18} />
+                  </Button>
+                )}
+              </InputGroup>
+            </Form>
+          </Col>
+          <Col md={4} className="d-flex justify-content-end align-items-center">
             <Button 
               variant="primary" 
               onClick={() => navigate('/formulario')}
@@ -410,6 +584,53 @@ const Dashboard = () => {
             </Button>
           </Col>
         </Row>
+
+        {advancedSearch && (
+          <Row className="mb-4">
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Nombre del cliente</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Buscar por nombre..."
+                  value={searchNombre}
+                  onChange={e => setSearchNombre(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>CUPS</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Buscar por CUPS..."
+                  value={searchCUPS}
+                  onChange={e => setSearchCUPS(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group>
+                <Form.Label>Estado</Form.Label>
+                <Form.Select
+                  value={filterEstado}
+                  onChange={(e) => setFilterEstado(e.target.value)}
+                >
+                  <option value="">Todos los estados</option>
+                  <option value="Pendiente de enviar">Pendiente de enviar</option>
+                  <option value="En trámite Solicitud">En trámite Solicitud</option>
+                  <option value="Pendiente aceptar Carta de Condiciones">Pendiente aceptar Carta de Condiciones</option>
+                  <option value="Gestión de Pago">Gestión de Pago</option>
+                  <option value="Gestión de pago trámite">Gestión de pago trámite</option>
+                  <option value="Solicitud de Incidencia">Solicitud de Incidencia</option>
+                  <option value="Trámite de licencia/obras">Trámite de licencia/obras</option>
+                  <option value="Finalizado">Finalizado</option>
+                  <option value="Anulado">Anulado</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+        )}
 
         {error && (
           <Row className="mb-4">
@@ -424,9 +645,24 @@ const Dashboard = () => {
             <Card>
               <Card.Header className="d-flex justify-content-between align-items-center">
                 <h5 className="mb-0">Trámites Registrados</h5>
-                <Badge bg="primary" pill>
-                  {tramites.length} {tramites.length === 1 ? 'registro' : 'registros'}
-                </Badge>
+                <div className="d-flex align-items-center">
+                  <span className="me-3">
+                    <Badge bg="primary" pill>
+                      {filteredTramites.length} {filteredTramites.length === 1 ? 'registro' : 'registros'}
+                    </Badge>
+                  </span>
+                  <Form.Select 
+                    size="sm"
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                    style={{ width: 'auto' }}
+                  >
+                    <option value="10">10 por página</option>
+                    <option value="20">20 por página</option>
+                    <option value="50">50 por página</option>
+                    <option value="100">100 por página</option>
+                  </Form.Select>
+                </div>
               </Card.Header>
               <Card.Body className="p-0">
                 {loading ? (
@@ -436,9 +672,9 @@ const Dashboard = () => {
                     </Spinner>
                     <p className="mt-3 text-muted">Cargando trámites...</p>
                   </div>
-                ) : tramites.length === 0 ? (
+                ) : filteredTramites.length === 0 ? (
                   <div className="alert alert-info m-3">
-                    <p className="mb-0">No hay trámites registrados. Use el botón "Solicitud Expediente" para crear uno nuevo.</p>
+                    <p className="mb-0">No hay trámites que coincidan con los criterios de búsqueda. {searchExpediente || searchNombre || searchCUPS || filterEstado ? <Button variant="link" onClick={resetFilters} className="p-0">Limpiar filtros</Button> : 'Use el botón "Solicitud Expediente" para crear uno nuevo.'}</p>
                   </div>
                 ) : (
                   <div className="table-responsive">
@@ -455,7 +691,7 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {tramites.map((tramite) => (
+                        {currentTramites.map((tramite) => (
                           <tr 
                             key={tramite.id}
                             onClick={() => openTramiteDetails(tramite)}
@@ -500,8 +736,36 @@ const Dashboard = () => {
                             </td>
                             <td>{tramite.fecha}</td>
                             <td>{tramite.formulario || "-"}</td>
-                            <td>
-                              <span className="text-monospace small">{tramite.cups}</span>
+                            <td onClick={(e) => e.stopPropagation()}>
+                              {editingCups === tramite.id ? (
+                                <div className="d-flex">
+                                  <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    value={cupsInput}
+                                    onChange={handleCupsChange}
+                                    className="me-2"
+                                  />
+                                  <Button 
+                                    size="sm" 
+                                    variant="primary"
+                                    onClick={() => handleCupsSubmit(tramite.id)}
+                                  >
+                                    Guardar
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="d-flex align-items-center"
+                                  onClick={() => handleCupsEdit(tramite.id, tramite.cups || '')}
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  <span className={!tramite.cups ? 'text-muted fst-italic' : ''}>
+                                    {tramite.cups || 'Sin asignar - Click para editar'}
+                                  </span>
+                                  <FiEdit2 size={14} className="ms-2" style={{ opacity: 0.7 }} />
+                                </div>
+                              )}
                             </td>
                             <td>
                               <Badge 
@@ -544,6 +808,16 @@ const Dashboard = () => {
                         ))}
                       </tbody>
                     </Table>
+                  </div>
+                )}
+                {filteredTramites.length > 0 && (
+                  <div className="d-flex justify-content-between align-items-center p-3 border-top">
+                    <div>
+                      Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, filteredTramites.length)} de {filteredTramites.length} trámites
+                    </div>
+                    <Pagination className="mb-0">
+                      {paginationItems}
+                    </Pagination>
                   </div>
                 )}
               </Card.Body>

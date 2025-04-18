@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 
 interface NavigationState {
@@ -8,14 +8,28 @@ interface NavigationState {
 
 const FormularioSelector = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Verificar si el usuario viene de la landing page
+  const isFromLandingPage = location.state?.from === 'landing';
+
+  // Función para volver a la página anterior correcta
+  const handleVolverClick = () => {
+    if (isFromLandingPage) {
+      navigate('/');
+    } else {
+      navigate('/dashboard');
+    }
+  };
 
   // Función para navegar con el tipo específico seleccionado y el tipo de formulario
   const navegarConTipo = (rutaBase: string, tipoEspecifico: string, tipoFormulario: string) => {
     navigate(`/formulario/${rutaBase}`, { 
       state: { 
         tipoEspecifico,
-        tipoFormulario 
-      } as NavigationState 
+        tipoFormulario,
+        from: location.state?.from // Mantener la información de origen
+      } 
     });
   };
 
@@ -33,9 +47,9 @@ const FormularioSelector = () => {
             <Card.Header className="bg-primary text-white">
               <h5 className="mb-0">Modificaciones en suministro existente</h5>
             </Card.Header>
-            <Card.Body className="d-flex flex-column">
-              <p className="text-muted mb-4">Para modificar uno o varios suministros o instalaciones existentes.</p>
-              <div className="d-grid gap-2 mt-auto">
+            <Card.Body className="d-flex flex-column justify-content-center" style={{ minHeight: '350px' }}>
+              <p className="text-muted mb-4 text-center">Para modificar uno o varios suministros o instalaciones existentes.</p>
+              <div className="d-grid gap-2">
                 <Button 
                   variant="outline-primary" 
                   className="btn-selector py-2"
@@ -46,16 +60,16 @@ const FormularioSelector = () => {
                 <Button 
                   variant="outline-primary" 
                   className="btn-selector py-2"
-                  onClick={() => navegarConTipo('modificacion', 'Cambios en la instalación', 'Modificación suministro existente')}
+                  onClick={() => navegarConTipo('modificacion', 'Cambio de tensión', 'Modificación suministro existente')}
                 >
-                  Cambios en la instalación
+                  Cambio de tensión
                 </Button>
                 <Button 
                   variant="outline-primary" 
                   className="btn-selector py-2"
-                  onClick={() => navegarConTipo('modificacion', 'Modificaciones técnicas', 'Modificación suministro existente')}
+                  onClick={() => navegarConTipo('modificacion', 'Modificación de instalaciones', 'Modificación suministro existente')}
                 >
-                  Modificaciones técnicas
+                  Modificación de instalaciones
                 </Button>
               </div>
             </Card.Body>
@@ -67,9 +81,16 @@ const FormularioSelector = () => {
             <Card.Header className="bg-success text-white">
               <h5 className="mb-0">Individual</h5>
             </Card.Header>
-            <Card.Body className="d-flex flex-column">
-              <p className="text-muted mb-4">Para gestionar trámites relacionados con un único suministro.</p>
-              <div className="d-grid gap-2 mt-auto">
+            <Card.Body className="d-flex flex-column justify-content-center" style={{ minHeight: '350px' }}>
+              <p className="text-muted mb-4 text-center">Para gestionar trámites relacionados con un único suministro.</p>
+              <div className="d-grid gap-2">
+                <Button 
+                  variant="outline-success" 
+                  className="btn-selector py-2"
+                  onClick={() => navegarConTipo('individual', 'Suministro de vivienda', 'Individual')}
+                >
+                  Suministro de vivienda
+                </Button>
                 <Button 
                   variant="outline-success" 
                   className="btn-selector py-2"
@@ -94,6 +115,13 @@ const FormularioSelector = () => {
                 <Button 
                   variant="outline-success" 
                   className="btn-selector py-2"
+                  onClick={() => navegarConTipo('individual', 'Punto de recarga', 'Individual')}
+                >
+                  Punto de recarga
+                </Button>
+                <Button 
+                  variant="outline-success" 
+                  className="btn-selector py-2"
                   onClick={() => navegarConTipo('individual', 'Otros', 'Individual')}
                 >
                   Otros
@@ -108,9 +136,9 @@ const FormularioSelector = () => {
             <Card.Header className="bg-info text-white">
               <h5 className="mb-0">Varios suministros</h5>
             </Card.Header>
-            <Card.Body className="d-flex flex-column">
-              <p className="text-muted mb-4">Para solicitar el alta de nuevos suministros eléctricos.</p>
-              <div className="d-grid gap-2 mt-auto">
+            <Card.Body className="d-flex flex-column justify-content-center" style={{ minHeight: '350px' }}>
+              <p className="text-muted mb-4 text-center">Para solicitar el alta de nuevos suministros eléctricos.</p>
+              <div className="d-grid gap-2">
                 <Button 
                   variant="outline-info" 
                   className="btn-selector py-2"
@@ -142,10 +170,10 @@ const FormularioSelector = () => {
         <Col className="text-center">
           <Button 
             variant="outline-secondary" 
-            onClick={() => navigate('/dashboard')}
+            onClick={handleVolverClick}
             className="px-4 py-2"
           >
-            Volver al Dashboard
+            {isFromLandingPage ? 'Volver a la página principal' : 'Volver al Dashboard'}
           </Button>
         </Col>
       </Row>
