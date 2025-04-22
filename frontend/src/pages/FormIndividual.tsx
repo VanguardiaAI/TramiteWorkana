@@ -19,6 +19,7 @@ const FormIndividual = () => {
   const [tipoTramite, setTipoTramite] = useState<string>('Individual');
   const [formData, setFormData] = useState({
     nombreCliente: '',
+    dni: '',
     dniPdf: null as File | null,
     email: '',
     telefonoMovil: '',
@@ -110,6 +111,7 @@ const FormIndividual = () => {
       // Añadir todos los campos de texto
       formDataToSend.append('tipo', tipoTramite);
       formDataToSend.append('nombreCliente', formData.nombreCliente);
+      formDataToSend.append('dni', formData.dni);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('telefonoMovil', formData.telefonoMovil);
       formDataToSend.append('cups', formData.cups);
@@ -145,6 +147,7 @@ const FormIndividual = () => {
         // Reiniciar el formulario
         setFormData({
           nombreCliente: '',
+          dni: '',
           dniPdf: null,
           email: '',
           telefonoMovil: '',
@@ -200,6 +203,23 @@ const FormIndividual = () => {
                 </Form.Control.Feedback>
               </Form.Group>
 
+              <Form.Group as={Col} md="6" controlId="dni">
+                <Form.Label>DNI</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  name="dni"
+                  value={formData.dni}
+                  onChange={handleInputChange}
+                  placeholder="Número de DNI"
+                />
+                <Form.Control.Feedback type="invalid">
+                  Por favor ingrese el DNI.
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+
+            <Row className="mb-3">
               <Form.Group as={Col} md="6" controlId="dniPdf">
                 <Form.Label>Adjuntar DNI (PDF)</Form.Label>
                 <Form.Control
@@ -211,6 +231,20 @@ const FormIndividual = () => {
                 />
                 <Form.Control.Feedback type="invalid">
                   Por favor adjunte una copia del DNI en formato PDF.
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md="6" controlId="formatoAutorizacion">
+                <Form.Label>Formato Autorización (PDF)</Form.Label>
+                <Form.Control
+                  required
+                  type="file"
+                  name="formatoAutorizacion"
+                  accept=".pdf"
+                  onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, 'formatoAutorizacion')}
+                />
+                <Form.Control.Feedback type="invalid">
+                  Por favor adjunte el formato de autorización en PDF.
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -248,20 +282,6 @@ const FormIndividual = () => {
             </Row>
 
             <Row className="mb-3">
-              <Form.Group as={Col} md="6" controlId="formatoAutorizacion">
-                <Form.Label>Formato Autorización (PDF)</Form.Label>
-                <Form.Control
-                  required
-                  type="file"
-                  name="formatoAutorizacion"
-                  accept=".pdf"
-                  onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, 'formatoAutorizacion')}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Por favor adjunte el formato de autorización en PDF.
-                </Form.Control.Feedback>
-              </Form.Group>
-
               <Form.Group as={Col} md="6" controlId="vivienda">
                 <Form.Label>Vivienda</Form.Label>
                 <Form.Select
@@ -271,6 +291,7 @@ const FormIndividual = () => {
                   onChange={handleSelectChange}
                 >
                   <option value="">Seleccione una opción</option>
+                  <option value="Vivienda definitiva">Vivienda definitiva</option>
                   <option value="Suministro de obras">Suministro de obras</option>
                   <option value="Suministro eventual">Suministro eventual</option>
                   <option value="Local comercial">Local comercial</option>

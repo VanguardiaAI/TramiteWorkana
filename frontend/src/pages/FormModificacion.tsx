@@ -19,6 +19,7 @@ const FormModificacion = () => {
   const [tipoTramite, setTipoTramite] = useState<string>('Modificación');
   const [formData, setFormData] = useState({
     nombreCliente: '',
+    dni: '',
     dniPdf: null as File | null,
     email: '',
     telefonoMovil: '',
@@ -36,7 +37,7 @@ const FormModificacion = () => {
     if (tipoEspecifico) {
       setTipoTramite(tipoEspecifico);
       // Si el tipo incluye "Aumento de potencia", establecer automáticamente el checkbox
-      if (tipoEspecifico === 'Aumento de potencia') {
+      if (tipoEspecifico === '') {
         setFormData(prev => ({
           ...prev,
           aumentoPotencia: true
@@ -110,6 +111,7 @@ const FormModificacion = () => {
       // Añadir todos los campos de texto
       formDataToSend.append('tipo', tipoTramite);
       formDataToSend.append('nombreCliente', formData.nombreCliente);
+      formDataToSend.append('dni', formData.dni);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('telefonoMovil', formData.telefonoMovil);
       formDataToSend.append('cups', formData.cups);
@@ -145,6 +147,7 @@ const FormModificacion = () => {
         // Reiniciar el formulario
         setFormData({
           nombreCliente: '',
+          dni: '',
           dniPdf: null,
           email: '',
           telefonoMovil: '',
@@ -200,6 +203,23 @@ const FormModificacion = () => {
                 </Form.Control.Feedback>
               </Form.Group>
 
+              <Form.Group as={Col} md="6" controlId="dni">
+                <Form.Label>DNI</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  name="dni"
+                  value={formData.dni}
+                  onChange={handleInputChange}
+                  placeholder="Número de DNI"
+                />
+                <Form.Control.Feedback type="invalid">
+                  Por favor ingrese el DNI.
+                </Form.Control.Feedback>
+              </Form.Group>
+            </Row>
+
+            <Row className="mb-3">
               <Form.Group as={Col} md="6" controlId="dniPdf">
                 <Form.Label>Adjuntar DNI (PDF)</Form.Label>
                 <Form.Control
@@ -211,6 +231,20 @@ const FormModificacion = () => {
                 />
                 <Form.Control.Feedback type="invalid">
                   Por favor adjunte una copia del DNI en formato PDF.
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group as={Col} md="6" controlId="formatoAutorizacion">
+                <Form.Label>Formato Autorización (PDF)</Form.Label>
+                <Form.Control
+                  required
+                  type="file"
+                  name="formatoAutorizacion"
+                  accept=".pdf"
+                  onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, 'formatoAutorizacion')}
+                />
+                <Form.Control.Feedback type="invalid">
+                  Por favor adjunte el formato de autorización en PDF.
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
@@ -248,20 +282,6 @@ const FormModificacion = () => {
             </Row>
 
             <Row className="mb-3">
-              <Form.Group as={Col} md="6" controlId="formatoAutorizacion">
-                <Form.Label>Formato Autorización (PDF)</Form.Label>
-                <Form.Control
-                  required
-                  type="file"
-                  name="formatoAutorizacion"
-                  accept=".pdf"
-                  onChange={(e) => handleFileChange(e as React.ChangeEvent<HTMLInputElement>, 'formatoAutorizacion')}
-                />
-                <Form.Control.Feedback type="invalid">
-                  Por favor adjunte el formato de autorización en PDF.
-                </Form.Control.Feedback>
-              </Form.Group>
-
               <Form.Group as={Col} md="6" controlId="aumentoPotencia">
                 <Form.Label className="d-block">&nbsp;</Form.Label>
                 <Form.Check

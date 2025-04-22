@@ -20,6 +20,7 @@ const FormAlta = () => {
   const [formData, setFormData] = useState({
     variosSuministros: false,
     nombreCliente: '',
+    dni: '',
     dniPdf: null as File | null,
     email: '',
     telefonoMovil: '',
@@ -113,6 +114,7 @@ const FormAlta = () => {
       // Añadir todos los campos de texto
       formDataToSend.append('tipo', tipoTramite);
       formDataToSend.append('nombreCliente', formData.nombreCliente);
+      formDataToSend.append('dni', formData.dni);
       formDataToSend.append('email', formData.email);
       formDataToSend.append('telefonoMovil', formData.telefonoMovil);
       formDataToSend.append('cups', formData.cups);
@@ -154,6 +156,7 @@ const FormAlta = () => {
         setFormData({
           variosSuministros: false,
           nombreCliente: '',
+          dni: '',
           dniPdf: null,
           email: '',
           telefonoMovil: '',
@@ -224,6 +227,21 @@ const FormAlta = () => {
             </Row>
 
             <Row className="mb-3">
+              <Form.Group as={Col} md="6" controlId="dni">
+                <Form.Label>DNI</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  name="dni"
+                  value={formData.dni}
+                  onChange={handleInputChange}
+                  placeholder="Número de DNI"
+                />
+                <Form.Control.Feedback type="invalid">
+                  Por favor ingrese el DNI.
+                </Form.Control.Feedback>
+              </Form.Group>
+
               <Form.Group as={Col} md="6" controlId="dniPdf">
                 <Form.Label>Adjuntar DNI (PDF)</Form.Label>
                 <Form.Control

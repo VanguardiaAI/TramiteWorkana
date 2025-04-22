@@ -298,13 +298,14 @@ const Dashboard = () => {
         return;
       }
 
-      // Obtener el trámite actual para incluir su estado
+      // Obtener el trámite actual
       const tramiteActual = tramites.find(t => t.id === id);
       if (!tramiteActual) {
         setError('No se encontró el trámite a actualizar.');
         return;
       }
 
+      // Enviar todos los campos requeridos, sobrescribiendo solo el campo editado
       const response = await fetch(`${API_URL}/tramites/${id}`, {
         method: 'PATCH',
         headers: {
@@ -312,13 +313,12 @@ const Dashboard = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          numeroExpediente: numeroExpedienteInput,
-          estado: tramiteActual.estado // Incluir el estado actual
+          ...tramiteActual,
+          numeroExpediente: numeroExpedienteInput // Sobrescribe el campo editado
         })
       });
 
       if (response.ok) {
-        // Actualizar el número de expediente en la interfaz
         setTramites(tramites.map(tramite => 
           tramite.id === id ? {...tramite, numeroExpediente: numeroExpedienteInput} : tramite
         ));
@@ -489,8 +489,8 @@ const Dashboard = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          cups: cupsInput,
-          estado: tramiteActual.estado // Mantener el estado actual
+          ...tramiteActual,
+          cups: cupsInput // Sobrescribe el campo editado
         })
       });
       if (response.ok) {

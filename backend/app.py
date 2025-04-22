@@ -72,6 +72,7 @@ class Tramite(db.Model):
     tipo = db.Column(db.String(50), nullable=False)  # 'Modificación', 'Individual', 'Alta' -> Este es el MOTIVO
     formulario = db.Column(db.String(100), nullable=True) # Nuevo campo para el TIPO DE FORMULARIO GENERAL
     nombreCliente = db.Column(db.String(100), nullable=False)
+    dni = db.Column(db.String(20), nullable=False)  # Nuevo campo para DNI
     email = db.Column(db.String(100), nullable=False)
     telefonoMovil = db.Column(db.String(20), nullable=False)
     cups = db.Column(db.String(100), nullable=False)
@@ -328,6 +329,7 @@ def create_tramite(current_user):
         new_tramite = Tramite(
             tipo=data['tipo'],
             nombreCliente=data['nombreCliente'],
+            dni=data['dni'],
             email=data['email'],
             telefonoMovil=data['telefonoMovil'],
             cups=data['cups'],
@@ -398,6 +400,7 @@ def get_tramites(current_user):
             'tipo': tramite.tipo, # Motivo específico
             'formulario': tramite.formulario, # Tipo de formulario general
             'nombreCliente': tramite.nombreCliente,
+            'dni': tramite.dni,
             'email': tramite.email,
             'telefonoMovil': tramite.telefonoMovil,
             'cups': tramite.cups,
@@ -437,13 +440,22 @@ def update_tramite_estado(current_user, tramite_id):
     if not data or 'estado' not in data:
         return jsonify({'message': 'Falta el campo estado'}), 400
     
-    tramite = Tramite.query.filter_by(id=tramite_id, user_id=current_user.id).first()
+    tramite = Tramite.query.filter_by(id=tramite_id).first()
     
     if not tramite:
         return jsonify({'message': 'Trámite no encontrado o no autorizado'}), 404
     
-    # Actualizar el estado
-    tramite.estado = data['estado']
+    # Actualizar campos editables si están en el body
+    if 'estado' in data:
+        tramite.estado = data['estado']
+    if 'numeroExpediente' in data:
+        tramite.numeroExpediente = data['numeroExpediente']
+    if 'cups' in data:
+        tramite.cups = data['cups']
+    if 'dni' in data:
+        tramite.dni = data['dni']
+    # Puedes agregar aquí otros campos editables si lo necesitas
+
     db.session.commit()
     
     # Si se solicita enviar correo electrónico y el estado es Completado
