@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 # Configurar CORS para permitir peticiones desde el frontend
-CORS(app, resources={r"/api/*": {"origins": os.environ.get('CORS_ORIGINS', '*')}})
+CORS(app, resources={r"/api/*": {"origins": os.environ.get('CORS_ORIGINS', 'https://ingenieracochele.com, http://localhost:3000')}})
 
 # Configuración de la base de datos
 basedir = os.path.abspath(os.path.dirname(__file__))

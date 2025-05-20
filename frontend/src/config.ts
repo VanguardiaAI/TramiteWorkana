@@ -2,11 +2,12 @@
 let API_URL: string;
 
 // Determinar el entorno basado en la URL actual
-const isProduction = window.location.hostname === 'cochele.clinicas.tech';
+const isProduction = window.location.hostname === 'ingenieracochele.com' || 
+                      window.location.hostname === 'www.ingenieracochele.com';
 
 if (isProduction) {
   // URL para producción
-  API_URL = 'https://cochele.clinicas.tech/api';
+  API_URL = 'https://ingenieracochele.com/api';
 } else {
   // URL para desarrollo
   API_URL = 'http://localhost:5000/api';
